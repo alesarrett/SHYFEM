@@ -1,0 +1,380 @@
+
+31.07.2015    VERS_7_2_1
+
+	major release
+
+	transition to allocatable objects finished
+	no need to change Rules.make, model should compile "out of the box"
+	some routines renamed (shyfem, shypre, shyelab)
+	routines now want input files on command line
+	post processing routines are still not completely ready
+	the following modules still do not work:
+		waves, sediments, lagrangian
+		fluidmud, atoxi
+		biological reactors (bio3d, aquabc, bfm)
+		boxes
+
+31.07.2015    VERS_7_1_84
+
+	minor changes
+
+30.07.2015    VERS_7_1_83
+
+	transition to allocatable objects finished
+	new names for some routines
+		ht	->	shyfem
+		vp	->	shypre
+		ousinf	->	shyelab
+		nosinf	->	shyelab
+	routines now want input files on command line
+		(example: shyfem nador.str)
+	post processing routines are still not completely ready
+	please have a look at shyelab for dealing with NOS and OUS files
+	plotting is still through plots
+
+c ./fem3d/shyfem.f:
+c 30.07.2015    ggu     routine renamed from ht to shyfem
+c
+c ./fem3d/subcst.f:
+c 30.07.2015    ggu     read str-file from command line
+c
+c ./fem3d/shypre.f:
+c 30.07.2015    ggu     vp renamed to shypre
+c
+c ./fem3d/shyelab.f:
+c 30.07.2015    ggu     shyelab started
+
+24.07.2015    VERS_7_1_82
+
+	only dependency on fixed dimensions is nbcdim
+	some auxiliary programs are running
+	grd treatment has been completely revised
+	dealt with compilation errors in femadj and femspline
+
+20.07.2015    VERS_7_1_81
+
+	no need for setting dimensions anymore
+	Rules.make file has not to be changed in most cases
+	files have been cleaned from automatic comments
+
+17.07.2015    VERS_7_1_80
+
+	first release based on modules and allocatable arrays
+	this is still an experimental release
+	only a limited number of programs are working:
+		ht, vp, plotsim (plots)
+	all other programs (mostly post processing) still have to be upgraded
+	in this case please use an older version
+	the following modules still do not work in the new version:
+		waves, sediments, lagrangian
+		fluidmud, atoxi
+		biological reactors (bio3d, aquabc, bfm)
+		boxes
+
+17.07.2015    VERS_7_1_53
+
+	new intermediate release ... do not use ...
+
+17.07.2015    VERS_7_1_52
+
+	new intermediate release ... do not use ...
+
+13.07.2015    VERS_7_1_51
+
+	new intermediate release ... do not use ...
+
+10.07.2015    VERS_7_1_50
+
+	this is a big release of changes
+	nobody should really use this version
+	this is only used to prepare the new major version with
+		modules instead of common blocks (inludes)
+		and arrays allocated on the heap
+	most of the conversion has been finished, but some points
+		still have to be done
+	some files will not be converted before the next major release:
+		lagrange
+		box
+		bfm
+
+05.06.2015    VERS_7_1_12
+
+	some more work for transition to module structure
+	lots of very small changes
+
+21.05.2015    VERS_7_1_11
+
+	this is a big and unfocused release...
+	some central parts rewritten for OMP (new3di.f, newcon.f)
+	new data structure mklenkii
+	lagrangian completely rewritten (based on structure)
+	ext, flx, ets, frcition to modules
+	plotting with logarithmic scale and color bar
+	bug fixes in offline
+	ia_icefree for ice cover implemented
+
+05.05.2015    VERS_7_1_10
+
+	ice cover bug eliminated
+	some adjustments in include files (global arrays)
+	winkv equivalence eliminated
+	all param_dummy.h substituted by param.h
+	compiler bug adjustments:
+		gfortran: use -O instead of -O3
+		ifort: remove -check uninit
+
+30.04.2015    VERS_7_1_9
+
+	ice cover integrated
+	czdef default friction for all areas not given
+	minor changes
+	post processing - new initialization
+
+23.04.2015    VERS_7_1_8
+
+	lagrangian 3d finished !!!!
+		internal coordinates introduced
+		should work also for geographical coordinates
+		works also for zeta (still to be checked)
+		no diffusion yet
+
+01.04.2015    VERS_7_1_7
+
+	intermediate version (3D lagrangian not finished)
+
+27.02.2015    VERS_7_1_6
+
+	new version of aquabc_II integrated
+
+
+26.02.2015    VERS_7_1_5
+
+	new calling sequence for BC to avoid parallel bug (bnds_read_new)
+	subnls.f rewritten
+	subpar3.f now allows for string of up to 10 chars
+	optimal interpolation finished (suboi.f, optintp.f)
+	iapini does not ask for basin/simul anymore
+	bug fix for waves on lat/lon grid
+
+23.01.2015    VERS_7_1_4
+
+	compute fetch also in geo coordinates
+	handle projection in both directions
+
+19.01.2015    VERS_7_1_3
+
+	major changes in code - this is a huge commit
+	basically all files have been changed
+	(nearly) all common blocks have been substituted by include files
+	please base all future changes of the code on this release
+	the release still has to be thoroughly debugged
+
+19.01.2015    VERS_7_1_2
+
+	small bug fixes
+	consolidation of some features
+	output for sediment module
+
+15.01.2015    VERS_7_1_1
+
+	mostly bug fixes
+	feminf and femelab are now working as expected
+	new tsinf (as feminf, but for time series files)
+	new routine strcheck.sh to check STR file before long runs
+
+12.01.2015    VERS_7_1_0
+
+	major release with the following highlights:
+	  new time management
+	  need date variable in STR file
+	  may specify dates and times in STR file in human readable format
+	  fractional time steps are available (itsplt=2,3)
+	  new file format is debugged
+	  use bc2fem to convert old boundary and forcing files to new format
+	please see also Release_notes_7.1v1.tex for more information
+
+09.01.2015    VERS_7_0_12
+
+	fractional time step finished (also without rounding, itsplt=3)
+	bug fix in subfemintp.f -> handle holes in files
+	bug fix for parallel in subfemintp.f: make variables local
+
+23.12.2014    VERS_7_0_11
+
+	fractional time step introduced
+	some common blocks converted to include
+
+19.12.2014    VERS_7_0_10
+
+	femtime converted (from common to include)
+	accept date also as string
+
+12-12-2014    VERS_7_0_9
+
+	small changes, bug fixes
+
+05-12-2014    VERS_7_0_8
+
+	some restructuring
+	waves have own section, routines moved to subwave.f
+	routine to handle command line options (subclo.f)
+
+26-11-2014    VERS_7_0_7
+
+	implementation of new time management
+	time management routines to new file subtime.f
+
+07-11-2014    VERS_7_0_6
+
+	bug fix for distance computation in z_tilt, c_tilt
+
+05-11-2014    VERS_7_0_5
+
+	Changes of Christian integrated
+	tilting also for lat/lon grids
+
+30-10-2014    VERS_7_0_4
+
+	Intermediate version
+	some changes in subbox.f
+	new version (4) for bas files
+
+21-10-2014    VERS_7_0_3
+
+	new boundary treatment for advection
+	pass id to scal_adv routines
+	new boundary treatment for lots of modules
+	absolute time routines fixed
+	integrated datetime into time series
+	new version (2) for fem files (position of date info)
+
+13-10-2014    VERS_7_0_2
+
+	absolute time introduced
+	one day off error fixed in subdts.f
+	use allocatable arrays in wininf.f
+	regression tests cleaned
+
+18-07-2014    VERS_7_0_1
+
+	first cleaning of new version
+	only new file format allowed
+
+07-07-2014    VERS_7_0_0
+
+	first of 7 series, identical to VERS_6_1_79
+
+=================================================================
+=================================================================
+=================================================================
+
+13-06-2013    VERS_6_1_65
+
+	offline version
+	plotting fem files
+	box model
+
+25-03-2013 - VERS_6_1_64 commit_2013-05-17
+
+	vertical advection in momentum equations
+
+30-03-2012 - 6_1_51
+
+	compiler warnings, Rules.make cleaned, OpenMP
+
+21-03-2012 - 6_1_50
+
+	manual update
+
+19-03-2012 - 6_1_49
+
+	install and administrative routines - manual update
+
+16-03-2012 - 6_1_48
+
+	better installing, test compilation
+
+09-03-2012 - 6_1_47
+
+	new residence time routines
+
+23-02-2012 - 6_1_46
+
+	new meteo forcing framework
+
+14-02-2012 - 6_1_44
+
+	restart inproved
+
+27-01-2012 - 6_1_43
+
+	changes to hybrid code
+
+25-01-2012 - 6_1_42
+
+	new OMP administration routines, lagrangian parallel
+
+24-01-2012 - 6_1_41
+
+	new module in lagrange for boundary induced particles and connectivity
+	automatic logo inclusion in plots
+	hard install
+
+14-12-2011 - 6_1_40
+
+	ersem/bfm routines integrated
+
+09-12-2011 - 6_1_38
+
+	netcdf conversion routines introduced
+
+18-11-2011 - 6_1_36
+
+	projection implemented
+
+10-11-2011 - 6_1_36
+
+	more on hybrid levels
+
+04-11-2011 - 6_1_35
+
+	hybrid levels
+
+24-10-2011 - 6_1_34
+
+	new flux computation for 3D and scalars
+	new fluxes also for lagrangian routines
+
+18-10-2011 - 6_1_33
+
+	bug in isphe and rdtitl fixed
+	bug in install routine fixed
+
+01-09-2011 - 6_1_32
+
+	show copyright notice in all major programs
+	new EOS plotting
+
+26-08-2011 - 6_1_31
+
+	new copyright notice
+	use symbolic link shyfem for all programs
+	use SHYFEMDIR for actual shyfem version
+	must use "make install" after unpacking code
+
+26-08-2011 - 6_1_30
+
+	baroclinic term for sigma layer
+
+19-08-2011 - 6_1_29
+
+	plot with no interpolation in element (isoinp)
+
+15-07-2011 - 6_1_28
+
+	possibility to compute checksum
+
+14-07-2011 - 6_1_27
+
+	plot dry areas
+

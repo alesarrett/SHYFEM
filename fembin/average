@@ -1,0 +1,193 @@
+#!/usr/bin/perl -ws
+#
+# computes average
+#
+# -move=m	computes moving average over m data, else arithmetic average
+# -col=c	averages only column c, else all columns
+# -fact=f	multiplies columns with f
+# -sum		computes total and not average
+# -std		computes standard deviation
+# -averstd	computes average and standard deviation
+# -format=val	number of significant digits (e.g., 0.01: 45.34, 1: no fract)
+#
+#------------------------------------------------------------------
+
+use warnings;
+use strict;
+
+# handle options
+
+$::move = 0 unless $::move;
+$::col = 0 unless $::col;
+$::fact = 0 unless $::fact;
+$::sum = 0 unless $::sum;
+$::std = 0 unless $::std;
+$::averstd = 0 unless $::averstd;
+$::format = 0 unless $::format;
+
+my @files = @ARGV;
+my $nfiles = @files;
+print STDERR "total number of files: $nfiles\n" if $nfiles > 1;
+
+my $total = 0;
+
+if( $::move ) {
+    my @new = <>;
+    my @cols = read_cols(\@new);
+    print STDERR "computing moving average with $::move\n";
+    $cols[1] = maver($::move,$cols[1]);
+    print_cols(@cols);
+} else {
+    my @new = <>;
+    my @cols = read_cols(\@new);
+    my $n = @cols;
+    if( $::col ) {
+      my $aver = aver($cols[$::col]);
+      print "$aver ";
+    } else {
+      for(my $i=1;$i<$n;$i++) {
+        my ($aver,$std) = aver($cols[$i]);
+	if( $::std ) {
+          print_format($std);
+	} elsif( $::averstd ) {
+          print_format($aver);
+	  print " +- ";
+          print_format($std);
+        } else {
+          print_format($aver);
+        }
+	print "  ";
+      }
+    }
+    print "\n";
+}
+
+###############################################################
+
+sub aver
+{
+    my $ra = shift;
+
+    my $total = 0;
+    my $accum = 0;
+    my $n = 0;
+
+    foreach (@$ra) {
+	$n++;
+	$total += $_;
+    }
+
+    return (0,0) unless $n;
+
+    my $aver = $total / $n;
+
+    foreach (@$ra) {
+	$accum += ($_-$aver)*($_-$aver);
+    }
+    
+    my $std = sqrt( $accum / $n );
+
+    $aver = $total if $::sum;
+
+    return ($aver,$std);
+}
+
+###############################################################
+
+sub maver
+{
+    my ($move,$ra) = @_;
+
+    my $n = @$ra;
+    my $n1 = $n - 1;
+
+    my @new = ();
+
+    for(my $i=0;$i<$n;$i++) {
+      #print STDERR "moving average $i\n" if $i%100 == 0;
+      my $low = $i - $move;
+      $low = 0 if $low < 0;
+      my $high = $i + $move;
+      $high = $n1 if $high > $n1;
+      my $m = 0;
+      my $v = 0;
+      #print STDERR "moving average $i ($low,$high)\n" if $i%100 == 0;
+      for(my $j=$low;$j<=$high;$j++) {
+	$m++;
+	$v += $$ra[$j];
+      }
+      $v /= $m if $m;
+      #print STDERR "moving average $i ($low,$high) $m -> $v\n" if $i%100 == 0;
+      push(@new,$v);
+    }
+
+    return \@new;
+}
+
+###############################################################
+
+sub print_cols
+{
+    my @cols = @_;
+
+    my $col = $cols[0];
+    my $nrows = @$col;
+
+    for(my $i=0;$i<$nrows;$i++) {
+      foreach $col (@cols) {
+        my $value = $$col[$i];
+        print "$value ";
+      }
+      print "\n";
+    }
+}
+
+
+###############################################################
+
+sub read_cols
+{
+    my $lines = shift;
+
+    my @cols = ();
+
+    foreach (@$lines) {
+	s/^\s+//;
+	next if /^\#/;
+	my @f = split;
+        my $ncols = @f;
+        for(my $i=0;$i<$ncols;$i++) {
+          my $ra = $cols[$i];
+	  unless( $ra ) {
+            my @new = ();
+	    $cols[$i] = \@new;
+            $ra = $cols[$i];
+	  }
+	  $f[$i] *= $::fact if $i > 0 and $::fact != 0;
+          push(@$ra,$f[$i]);
+        }
+    }
+
+    return @cols;
+}
+
+sub print_format {
+
+  my $val = shift;
+
+  if( $::format ) {
+    my $f = $::format;
+    $val /= $f;
+    if( $val > 0 ) {
+      $val = int($val+0.5);
+    } else {
+      $val = int($val-0.5);
+    }
+    $val *= $f;
+  }
+
+  print "$val";
+}
+
+###############################################################
+

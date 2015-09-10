@@ -1,0 +1,73 @@
+#!/usr/bin/perl -s
+#
+# shows all tags and commits available
+#
+# -tagsonly
+#
+#--------------------------------------------------------------
+
+$basedir = "~/fem/";
+$tagdir   = ".git/refs/tags";
+
+$dir = $basedir . $tagdir;
+
+$tags = `cd $dir; ls *`;
+@tags = split(/\s+/,$tags);
+
+foreach $tag (@tags) {
+  $ref = `cat $dir/$tag`;
+  chomp $ref;
+  $tags{$ref} = $tag;
+  #print "$ref  $tag\n";
+}
+
+$coms = `git log --pretty=oneline`;
+@coms = split(/\n+/,$coms);
+@lines = ();
+
+foreach $com (@coms) {
+  ($hash,@mess) = split(/\s+/,$com);
+  $mess = join(" ",@mess);
+  $shorthash = substr($hash,0,10);
+  $shortmess = substr($mess,0,55);
+  $tag = format_tag($tags{$hash});
+  if( $tagsonly ) {
+    $tag =~ s/^\s+$//;
+    push(@lines,$tag) if( $tag );
+  } else {
+    my $line = "$shorthash $tag $shortmess";
+    push(@lines,$line);
+  }
+  #print "$line\n";
+}
+
+foreach my $line (reverse @lines) {
+  print "$line\n";
+}
+
+#-------------------------------------------------------------
+
+sub format_tag {
+
+  my ($tag,$size) = shift;
+
+  $tag = "      " unless( $tag );
+
+  my $line = sprintf("%12s",$tag);
+
+  return $line;
+}
+
+sub get_object {
+
+  my $tag = shift;
+
+  open(TAG,"<$dir/$tag") || die "cannot open file: $dir/$tag";
+  my $ref = <TAG>;
+  close(TAG);
+
+  chomp($ref);
+
+  return $ref;
+}
+
